@@ -4,7 +4,9 @@ import entities.DemandEntity;
 import entities.ProductionEntity;
 import entities.ShortageEntity;
 import external.CurrentStock;
-import shortage.forecasting.*;
+import shortage.forecasting.ShortagePredictionFactory;
+import shortage.forecasting.Shortages;
+import shortage.forecasting.ShortagesService;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -35,30 +37,12 @@ public class ShortageFinder {
     public static List<ShortageEntity> findShortages(LocalDate today, int daysAhead, CurrentStock externalStock,
                                                      List<ProductionEntity> productions, List<DemandEntity> demands) {
 
-        DateRange dates = DateRange.from(today, daysAhead);
-        WarehouseStock stock = new WarehouseStock(externalStock.getLevel());
-        ProductionOutput outputs = new ProductionOutput(productions);
-        Demands demandsPerDay = new Demands(demands);
+        ShortagePredictionFactory factory = new ShortagePredictionFactory(today, daysAhead, externalStock, productions, demands);
+        ShortagesService service = new ShortagesService(factory);
 
-        long level = stock.level();
+        Shortages shortages = service.predict();
 
-        Shortages gap = new Shortages(outputs.getProductRefNo());
-        for (LocalDate day : dates) {
-            if (demandsPerDay.noDemand(day)) {
-                level += outputs.getOutputs(day);
-                continue;
-            }
-            long produced = outputs.getOutputs(day);
-            Demands.DailyDemand demand = demandsPerDay.get(day);
-            long levelOnDelivery = demand.levelOnDelivery(level, produced);
-
-            if (levelOnDelivery < 0) {
-                gap.add(day, levelOnDelivery);
-            }
-            long endOfDayLevel = level + produced - demand.getLevel();
-            level = endOfDayLevel >= 0 ? endOfDayLevel : 0;
-        }
-        return gap.toList();
+        return shortages.toList();
     }
 
 }

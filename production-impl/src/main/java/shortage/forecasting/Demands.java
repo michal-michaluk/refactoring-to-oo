@@ -47,5 +47,9 @@ public class Demands {
         public long levelOnDelivery(long level, long produced) {
             return strategy.calculate(level, produced, getLevel());
         }
+
+        public long endOfDayLevel(long level, long produced) {
+            return level + produced - getLevel();
+        }
     }
 }
