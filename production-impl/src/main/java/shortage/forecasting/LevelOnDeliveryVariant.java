@@ -7,7 +7,7 @@ public class LevelOnDeliveryVariant {
         return switch (schema) {
             case atDayStart -> LevelOnDelivery.AtDayStart;
             case tillEndOfDay -> LevelOnDelivery.TillEndOfDay;
-            case null, default -> LevelOnDelivery.exceptionall;
+            case null, default -> LevelOnDelivery.exceptionally;
         };
     }
 }
