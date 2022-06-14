@@ -1,7 +1,5 @@
-package tools;
+package acl;
 
-import acl.ProductionPlanningMediator;
-import acl.ShortagePredictionFactory;
 import entities.DemandEntity;
 import entities.ProductionEntity;
 import entities.ShortageEntity;
@@ -12,9 +10,9 @@ import shortage.forecasting.ShortagesService;
 import java.time.LocalDate;
 import java.util.List;
 
-public class ShortageFinder {
+public class ShortageFinderACL {
 
-    private ShortageFinder() {
+    private ShortageFinderACL() {
     }
 
     /**
