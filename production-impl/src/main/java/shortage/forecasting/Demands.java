@@ -1,7 +1,6 @@
 package shortage.forecasting;
 
 import entities.DemandEntity;
-import enums.DeliverySchema;
 import tools.Util;
 
 import java.time.LocalDate;
@@ -14,9 +13,9 @@ public class Demands {
     private final Map<LocalDate, DemandEntity> demands;
 
     public Demands(List<DemandEntity> demands) {
-        HashMap<LocalDate, DemandEntity> demandsPerDay = new HashMap<>();
-        for (DemandEntity demand1 : demands) {
-            demandsPerDay.put(demand1.getDay(), demand1);
+        Map<LocalDate, DemandEntity> demandsPerDay = new HashMap<>();
+        for (DemandEntity demand : demands) {
+            demandsPerDay.put(demand.getDay(), demand);
         }
         this.demands = Collections.unmodifiableMap(demandsPerDay);
     }
@@ -34,17 +33,19 @@ public class Demands {
 
     public static class DailyDemand {
         private final DemandEntity demand;
+        private final LevelOnDelivery strategy;
 
         public DailyDemand(DemandEntity demand) {
             this.demand = demand;
-        }
-
-        public DeliverySchema getDeliverySchema() {
-            return Util.getDeliverySchema(demand);
+            strategy = LevelOnDeliveryVariant.pick(Util.getDeliverySchema(demand));
         }
 
         public long getLevel() {
             return Util.getLevel(demand);
+        }
+
+        public long levelOnDelivery(long level, long produced) {
+            return strategy.calculate(level, produced, getLevel());
         }
     }
 }
