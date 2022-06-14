@@ -5,15 +5,14 @@ import entities.ProductionEntity;
 import entities.ShortageEntity;
 import enums.DeliverySchema;
 import external.CurrentStock;
+import shortage.forecasting.DateRange;
 import shortage.forecasting.Demands;
 import shortage.forecasting.ProductionOutput;
+import shortage.forecasting.WarehouseStock;
 
 import java.time.LocalDate;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.stream.Stream;
-
-import static java.util.stream.Collectors.toList;
 
 public class ShortageFinder {
 
@@ -38,17 +37,15 @@ public class ShortageFinder {
      * customer always specifies desired delivery schema
      * (increase amount in scheduled transport or organize extra transport at given time)
      */
-    public static List<ShortageEntity> findShortages(LocalDate today, int daysAhead, CurrentStock stock,
+    public static List<ShortageEntity> findShortages(LocalDate today, int daysAhead, CurrentStock externalStock,
                                                      List<ProductionEntity> productions, List<DemandEntity> demands) {
 
-        List<LocalDate> dates = Stream.iterate(today, date -> date.plusDays(1))
-                .limit(daysAhead)
-                .collect(toList());
-
+        DateRange dates = DateRange.from(today, daysAhead);
+        WarehouseStock stock = new WarehouseStock(externalStock.getLevel());
         ProductionOutput outputs = new ProductionOutput(productions);
-
         Demands demandsPerDay = new Demands(demands);
-        long level = stock.getLevel();
+
+        long level = stock.level();
 
         List<ShortageEntity> gap = new LinkedList<>();
         for (LocalDate day : dates) {
