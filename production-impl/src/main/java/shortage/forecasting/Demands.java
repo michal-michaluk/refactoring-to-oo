@@ -25,17 +25,26 @@ public class Demands {
         return !demands.containsKey(day);
     }
 
-    public DeliverySchema getDeliverySchema(LocalDate day) {
+    public DailyDemand get(LocalDate day) {
         if (!demands.containsKey(day)) {
-            // ??
+            return null;
         }
-        return Util.getDeliverySchema(demands.get(day));
+        return new DailyDemand(demands.get(day));
     }
 
-    public long getLevel(LocalDate day) {
-        if (!demands.containsKey(day)) {
-            // ??
+    public static class DailyDemand {
+        private final DemandEntity demand;
+
+        public DailyDemand(DemandEntity demand) {
+            this.demand = demand;
         }
-        return Util.getLevel(demands.get(day));
+
+        public DeliverySchema getDeliverySchema() {
+            return Util.getDeliverySchema(demand);
+        }
+
+        public long getLevel() {
+            return Util.getLevel(demand);
+        }
     }
 }

@@ -57,13 +57,13 @@ public class ShortageFinder {
                 continue;
             }
             long produced = outputs.getOutputs(day);
-
+            Demands.DailyDemand demand = demandsPerDay.get(day);
             long levelOnDelivery;
-            if (demandsPerDay.getDeliverySchema(day) == DeliverySchema.atDayStart) {
-                levelOnDelivery = level - demandsPerDay.getLevel(day);
-            } else if (demandsPerDay.getDeliverySchema(day) == DeliverySchema.tillEndOfDay) {
-                levelOnDelivery = level - demandsPerDay.getLevel(day) + produced;
-            } else if (demandsPerDay.getDeliverySchema(day) == DeliverySchema.every3hours) {
+            if (demand.getDeliverySchema() == DeliverySchema.atDayStart) {
+                levelOnDelivery = level - demand.getLevel();
+            } else if (demand.getDeliverySchema() == DeliverySchema.tillEndOfDay) {
+                levelOnDelivery = level - demand.getLevel() + produced;
+            } else if (demand.getDeliverySchema() == DeliverySchema.every3hours) {
                 // TODO WTF ?? we need to rewrite that app :/
                 throw new UnsupportedOperationException();
             } else {
@@ -79,7 +79,7 @@ public class ShortageFinder {
                 entity.setMissing(-levelOnDelivery);
                 gap.add(entity);
             }
-            long endOfDayLevel = level + produced - demandsPerDay.getLevel(day);
+            long endOfDayLevel = level + produced - demand.getLevel();
             level = endOfDayLevel >= 0 ? endOfDayLevel : 0;
         }
         return gap;
