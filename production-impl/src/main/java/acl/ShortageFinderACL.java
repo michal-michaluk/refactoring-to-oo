@@ -4,6 +4,7 @@ import entities.DemandEntity;
 import entities.ProductionEntity;
 import entities.ShortageEntity;
 import external.CurrentStock;
+import shortage.forecasting.ShortagePredictionFactory;
 import shortage.forecasting.Shortages;
 import shortage.forecasting.ShortagesService;
 import tools.ShortageFinder;
@@ -39,7 +40,11 @@ public class ShortageFinderACL {
     public static List<ShortageEntity> findShortages(LocalDate today, int daysAhead, CurrentStock externalStock,
                                                      List<ProductionEntity> productions, List<DemandEntity> demands) {
         if (TOGGLE_NEW_MODEL) {
-            ShortagePredictionFactory factory = new ShortagePredictionFactory(today, daysAhead, externalStock, new ProductionPlanningMediator(productions), demands);
+            ShortagePredictionFactory factory = new ShortagePredictionACLFactory(
+                    today, daysAhead, externalStock,
+                    new ProductionPlanningMediator(productions),
+                    new DemandForecastingMediator(demands)
+            );
             ShortagesService service = new ShortagesService(factory);
             Shortages shortages = service.predict();
             return shortages.toList();

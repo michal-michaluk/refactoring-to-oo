@@ -22,10 +22,6 @@ public class ShortagePrediction {
 
         Shortages shortages = new Shortages(outputs.getProductRefNo());
         for (LocalDate day : dates) {
-            if (demands.noDemand(day)) {
-                level += outputs.getOutputs(day);
-                continue;
-            }
             long produced = outputs.getOutputs(day);
             Demands.DailyDemand demand = demands.get(day);
             long levelOnDelivery = demand.levelOnDelivery(level, produced);

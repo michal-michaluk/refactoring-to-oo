@@ -1,6 +1,7 @@
-package shortage.forecasting;
+package acl;
 
 import enums.DeliverySchema;
+import shortage.forecasting.LevelOnDelivery;
 
 public class LevelOnDeliveryVariant {
     public static LevelOnDelivery pick(DeliverySchema schema) {
