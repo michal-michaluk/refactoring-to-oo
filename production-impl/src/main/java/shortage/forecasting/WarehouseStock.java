@@ -1,4 +1,4 @@
 package shortage.forecasting;
 
-public record WarehouseStock(long level) {
+public record WarehouseStock(long level, long locked) {
 }

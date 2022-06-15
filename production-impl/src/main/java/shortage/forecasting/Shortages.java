@@ -8,10 +8,16 @@ import java.util.List;
 
 public class Shortages {
     private final String productRefNo;
-    private final List<ShortageEntity> shortages = new LinkedList<>();
+    private final List<ShortageEntity> shortages;
 
     public Shortages(String productRefNo) {
         this.productRefNo = productRefNo;
+        shortages = new LinkedList<>();
+    }
+
+    public Shortages(String productRefNo, List<ShortageEntity> shortages) {
+        this.productRefNo = productRefNo;
+        this.shortages = shortages;
     }
 
     public void add(LocalDate day, long missing) {
@@ -25,5 +31,17 @@ public class Shortages {
 
     public List<ShortageEntity> toList() {
         return shortages;
+    }
+
+    public boolean differentThen(Shortages other) {
+        return !shortages.isEmpty() && !shortages.equals(other.shortages);
+    }
+
+    public boolean isSolved(Shortages previous) {
+        return shortages.isEmpty() && !previous.shortages.isEmpty();
+    }
+
+    public boolean firstBefore(LocalDate date) {
+        return shortages.get(0).getAtDay().isBefore(date);
     }
 }
