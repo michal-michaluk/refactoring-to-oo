@@ -6,11 +6,14 @@ import entities.ShortageEntity;
 import external.CurrentStock;
 import shortage.forecasting.Shortages;
 import shortage.forecasting.ShortagesService;
+import tools.ShortageFinder;
 
 import java.time.LocalDate;
 import java.util.List;
 
 public class ShortageFinderACL {
+
+    private static boolean TOGGLE_NEW_MODEL = true;
 
     private ShortageFinderACL() {
     }
@@ -35,13 +38,14 @@ public class ShortageFinderACL {
      */
     public static List<ShortageEntity> findShortages(LocalDate today, int daysAhead, CurrentStock externalStock,
                                                      List<ProductionEntity> productions, List<DemandEntity> demands) {
-
-        ShortagePredictionFactory factory = new ShortagePredictionFactory(today, daysAhead, externalStock, new ProductionPlanningMediator(productions), demands);
-        ShortagesService service = new ShortagesService(factory);
-
-        Shortages shortages = service.predict();
-
-        return shortages.toList();
+        if (TOGGLE_NEW_MODEL) {
+            ShortagePredictionFactory factory = new ShortagePredictionFactory(today, daysAhead, externalStock, new ProductionPlanningMediator(productions), demands);
+            ShortagesService service = new ShortagesService(factory);
+            Shortages shortages = service.predict();
+            return shortages.toList();
+        } else {
+            return ShortageFinder.findShortages(today, daysAhead, externalStock, productions, demands);
+        }
     }
 
 }
